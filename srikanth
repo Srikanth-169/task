@@ -1,0 +1,36 @@
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Base64;
+
+public class TriggerJenkinsJob {
+    public static void main(String[] args) {
+        try {
+            String jenkinsUrl = "http://your-jenkins-server:8080/job/my-job/build";
+            String user = "admin";         // Jenkins username
+            String token = "yourapitoken"; // Jenkins API token (not password)
+
+            URL url = new URL(jenkinsUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+
+            // Authentication (Basic Auth)
+            String auth = user + ":" + token;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            conn.setRequestProperty("Authorization", "Basic " + encodedAuth);
+
+            conn.setDoOutput(true);
+            OutputStream os = conn.getOutputStream();
+            os.write("".getBytes()); // send empty payload
+            os.flush();
+            os.close();
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
